@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Container,
   InputArea,
@@ -16,8 +16,11 @@ import SignInput from "../../components/SignInput";
 import { useNavigation } from "@react-navigation/native";
 
 import Api from "../../Api";
+import { UserContext } from "../../contexts/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default () => {
+  const { dispatch: userDispatch } = useContext(UserContext);
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
@@ -27,7 +30,18 @@ export default () => {
     if (email !== "" && password !== "") {
       const res = await Api.signIn(email, password);
       if (res.token) {
-        alert("Deu certo!");
+        await AsyncStorage.setItem("token", res.token);
+
+        userDispatch({
+          type: "setAvatar",
+          payload: {
+            avatar: res.data.avatar,
+          },
+        });
+
+        navigation.reset({
+          routes: [{ name: "MainTab" }],
+        });
       } else {
         alert("Verifique os campos!");
       }

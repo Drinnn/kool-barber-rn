@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Container,
   InputArea,
@@ -17,8 +17,10 @@ import SignInput from "../../components/SignInput";
 import { useNavigation } from "@react-navigation/native";
 
 import Api from "../../Api";
+import { UserContext } from "../../contexts/UserContext";
 
 export default () => {
+  const { dispatch: userDispatch } = useContext(UserContext);
   const navigation = useNavigation();
 
   const [name, setName] = useState("");
@@ -29,7 +31,18 @@ export default () => {
     if (name !== "" && email !== "" && password !== "") {
       const res = await Api.signUp(name, email, password);
       if (res.token) {
-        alert("DEU CERTO!");
+        await AsyncStorage.setItem("token", res.token);
+
+        userDispatch({
+          type: "setAvatar",
+          payload: {
+            avatar: res.data.avatar,
+          },
+        });
+
+        navigation.reset({
+          routes: [{ name: "MainTab" }],
+        });
       } else {
         alert(`Algo deu errado: ${res.error}`);
       }
