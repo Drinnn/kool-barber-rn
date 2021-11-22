@@ -16,6 +16,8 @@ import LockIcon from "../../../assets/lock.svg";
 import SignInput from "../../components/SignInput";
 import { useNavigation } from "@react-navigation/native";
 
+import Api from "../../Api";
+
 export default () => {
   const navigation = useNavigation();
 
@@ -23,7 +25,18 @@ export default () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUpClick = () => {};
+  const handleSignUpClick = async () => {
+    if (name !== "" && email !== "" && password !== "") {
+      const res = await Api.signUp(name, email, password);
+      if (res.token) {
+        alert("DEU CERTO!");
+      } else {
+        alert(`Algo deu errado: ${res.error}`);
+      }
+    } else {
+      alert("Preencha todos os campos!");
+    }
+  };
   const handleSignInClick = () => {
     navigation.reset({
       routes: [{ name: "SignIn" }],

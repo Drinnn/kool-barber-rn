@@ -15,13 +15,26 @@ import LockIcon from "../../../assets/lock.svg";
 import SignInput from "../../components/SignInput";
 import { useNavigation } from "@react-navigation/native";
 
+import Api from "../../Api";
+
 export default () => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignInClick = () => {};
+  const handleSignInClick = async () => {
+    if (email !== "" && password !== "") {
+      const res = await Api.signIn(email, password);
+      if (res.token) {
+        alert("Deu certo!");
+      } else {
+        alert("Verifique os campos!");
+      }
+    } else {
+      alert("Preencha todos os campos!");
+    }
+  };
 
   const handleSignUpClick = () => {
     navigation.reset({
